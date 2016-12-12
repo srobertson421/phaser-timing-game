@@ -18,6 +18,8 @@ var tween1;
 var tween2;
 var score = 0;
 var scoreText;
+var canClick = true;
+var hasStarted = false;
 
 function create() {
   scoreText = game.add.text(50, 50, score, {font: '28px Arial', fill: '#fff'});
@@ -46,34 +48,49 @@ function create() {
 }
 
 function clickHandler(pointer) {
+  if(!canClick) {
+    return;
+  }
+
+  if(!hasStarted) {
+    hasStarted = true;
+  }
+
   if(circle.x > CLICK_BOUNDS.left && circle.x < CLICK_BOUNDS.right) {
     game.stage.backgroundColor = '00ff00';
-    CLICK_BOUNDS.left = 0;
-    CLICK_BOUNDS.right = 0;
     score++;
+    score = round(score, 1);
     scoreText.text = score;
     SPEED -= 100;
-    console.log(SPEED);
-    tween1.updateTweenData('duration', SPEED);
-    tween2.updateTweenData('duration', SPEED);
   } else {
     game.stage.backgroundColor = 'ff0000';
     score--;
+    score = round(score, 1);
     scoreText.text = score;
     SPEED += 100;
-    console.log(SPEED);
-    tween1.updateTweenData('duration', SPEED);
-    tween2.updateTweenData('duration', SPEED);
   }
+
+  CLICK_BOUNDS.left = 0;
+  CLICK_BOUNDS.right = 0;
+  tween1.updateTweenData('duration', SPEED);
+  tween2.updateTweenData('duration', SPEED);
+
+  canClick = false;
 
   setTimeout(function() {
     game.stage.backgroundColor = '000000';
     CLICK_BOUNDS.left = game.rnd.integerInRange(0, 500);
     CLICK_BOUNDS.right = CLICK_BOUNDS.left + 200;
+    canClick = true;
   }, 750);
 }
 
 function restartTween(spriteObj, tweenObj) {
+  if(hasStarted) {
+    score -= 0.1;
+    score = round(score, 1);
+    scoreText.text = score;
+  }
   tweenObj.start();
 }
 
@@ -84,4 +101,8 @@ function update() {
   } else {
     circle.tint = 0xffffff;
   }
+}
+
+function round(value, decimals) {
+  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
