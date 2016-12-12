@@ -47,6 +47,10 @@ function create() {
   game.input.onDown.add(clickHandler, this);
 }
 
+function endGame() {
+  tween1.stop();
+}
+
 function clickHandler(pointer) {
   if(!canClick) {
     return;
@@ -54,6 +58,7 @@ function clickHandler(pointer) {
 
   if(!hasStarted) {
     hasStarted = true;
+    game.time.events.add(Phaser.Timer.SECOND * 15, endGame, this);
   }
 
   if(circle.x > CLICK_BOUNDS.left && circle.x < CLICK_BOUNDS.right) {
